@@ -1,146 +1,160 @@
-# Brazzaville Montres - Documentation Technique
+# Site Rolex - Documentation Projet
 
-Site vitrine e-commerce frontend (sans backend) developpe en HTML, CSS et JavaScript vanilla.
+Site vitrine e-commerce premium en HTML, CSS et JavaScript (sans backend), avec panier local, simulation de paiement, theme sombre par defaut et interface multilingue FR/EN.
 
-Le projet est localise en francais et adapte au contexte Congo-Brazzaville.
+## Apercu
 
-## 1) Vue d'ensemble du projet
+Le projet propose une experience moderne de presentation de montres:
 
-Le site presente une collection de montres premium avec :
+- page unique performante et responsive
+- sections produits et nouveautes animees
+- panier dynamique avec persistance locale (`localStorage`)
+- modal de paiement simulee (sans integration bancaire)
+- traduction FR/EN sur toute l'interface
+- design premium optimise mobile, tablette et desktop
 
-- une page unique fluide (sections Accueil, Selection, Produits, Nouveautes, etc.),
-- un panier dynamique en JavaScript,
-- une simulation de paiement (sans API bancaire),
-- des animations UI modernes,
-- un theme clair/sombre memorise.
+## Structure du projet
 
-Le fonctionnement repose sur un front pur : toute la logique metier est geree dans le navigateur.
+```text
+Site Rolex/
+|- index.html
+|- README.md
+|- netlify.toml
+|- assets/
+   |- css/
+   |  |- styles.css
+   |  |- swiper-bundle.min.css
+   |- js/
+   |  |- main.js
+   |  |- swiper-bundle.min.js
+   |- img/
+```
 
-## 2) Structure des fichiers et role de chacun
+## Fonctionnalites principales
 
-- `index.html`
-  - Structure complete de la page.
-  - Contient les sections produit, la modal panier, la modal paiement, et la confirmation de paiement.
-  - Les boutons d'ajout utilisent l'attribut `data-add-to-cart` pour connecter HTML et JS.
+### 1) Navigation et experience utilisateur
 
-- `assets/css/styles.css`
-  - Fichier de style principal (CSS pur, sans SCSS).
-  - Gere le design global, le responsive, les animations, le dark mode et les modals.
-  - Inclut les media queries pour mobile, tablette et desktop.
+- menu responsive avec etat actif au scroll
+- bouton de changement de theme (sombre/clair)
+- bouton de changement de langue FR/EN (memorise)
+- scroll-up contextuel
 
-- `assets/js/main.js`
-  - Cerveau interactif du site.
-  - Gere menu mobile, sliders, scroll actif, theme, panier, paiement et localStorage.
+### 2) Catalogue et interactions
 
-- `assets/js/swiper-bundle.min.js`
-  - Bibliotheque externe pour les sliders (temoignages et nouveautes).
+- cartes produits avec animations et effets hover
+- slider temoignages
+- slider nouveautes
+- boutons d'ajout panier (`data-add-to-cart`)
 
-- `assets/css/swiper-bundle.min.css`
-  - Styles necessaires au rendu des sliders Swiper.
+### 3) Panier dynamique
 
-## 3) Pourquoi JavaScript est essentiel ici
+Le panier est entierement gere en JavaScript via `assets/js/main.js`.
 
-Sans JavaScript, le site resterait statique :
+- ajout/incrementation d'articles
+- modification des quantites (+/-)
+- suppression d'article
+- calcul automatique du total
+- rendu dynamique du contenu
+- panier scrollable pour gros volumes d'articles
 
-- pas d'ajout dynamique au panier,
-- pas de calcul de total,
-- pas de persistance des donnees au refresh,
-- pas d'ouverture/fermeture de modals interactives,
-- pas de confirmation de paiement reelle,
-- pas d'interactions avancees (dark mode memorise, etc.).
+Donnees stockees:
 
-JavaScript joue donc le role de moteur fonctionnel de l'experience utilisateur.
+- cle de stockage: `watches-cart`
+- format: tableau JSON dans `localStorage`
 
-## 4) Gestion du panier : qui fait quoi et comment
+### 4) Paiement simule
 
-La logique panier est 100% geree par `assets/js/main.js`.
+Le flux de paiement est UX-only:
 
-### 4.1 Donnees panier
+1. ouverture modal au clic sur commander
+2. validation formulaire local
+3. vidage du panier
+4. affichage confirmation de paiement
 
-- Cle de stockage : `watches-cart`.
-- Les articles sont stockes en tableau JSON dans `localStorage`.
-- Chargement initial :
-  - `let cartItems = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]')`
+## Internationalisation (FR/EN)
 
-### 4.2 Ajout au panier
+Le systeme i18n repose sur:
 
-- Les boutons HTML ont `data-add-to-cart`.
-- JS attache un event listener sur chaque bouton :
-  - `document.querySelectorAll('[data-add-to-cart]')...`
-- `getProductFromButton(button)` lit dans la card :
-  - nom (`.featured__title`, `.products__title`, etc.),
-  - prix,
-  - image.
-- `addToCart(product)` :
-  - incremente la quantite si le produit existe,
-  - sinon ajoute un nouvel item,
-  - sauvegarde via `saveCart()`,
-  - rerender via `renderCart()`.
+- attributs `data-i18n`, `data-i18n-placeholder`, `data-i18n-html`
+- dictionnaire de traduction dans `assets/js/main.js`
+- persistance du choix langue via `selected-language`
+- mise a jour dynamique du titre de page et des textes UI
 
-### 4.3 Quantite, suppression et total
+## Responsive design
 
-- `updateItemQuantity(id, delta)` augmente/diminue la quantite.
-- `removeItem(id)` supprime la ligne produit.
-- `renderCart()` :
-  - reconstruit le HTML du panier,
-  - recalcule nombre total d'articles,
-  - recalcule le montant total en FCFA.
+Le CSS est structure en breakpoints:
 
-### 4.4 Persistance
+- base mobile
+- `max-width: 575px` (optimisations extra-mobile)
+- `min-width: 576px`
+- `min-width: 767px`
+- `min-width: 768px and max-width: 1023px` (tablette)
+- `min-width: 992px`
+- `min-width: 1024px`
 
-- `saveCart()` appelle :
-  - `localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems))`
-- Resultat : le panier est conserve meme apres rechargement de page.
+Points optimises:
 
-## 5) Paiement simule : processus complet
+- hero section
+- grilles produits
+- panier et elements de controle
+- footer et boutons CTA
+- lisibilite generale des blocs
 
-Le paiement reste volontairement une simulation frontend :
-
-1. utilisateur clique `Passer au paiement`,
-2. ouverture de la modal paiement,
-3. soumission du formulaire,
-4. JS vide le panier et met a jour `localStorage`,
-5. fermeture modal paiement,
-6. affichage d'une vraie carte de confirmation (`payment-success`).
-
-Cette approche permet de tester l'UX complete sans integration API.
-
-## 6) Responsive : strategie
-
-Le projet est mobile-first avec media queries progressives :
-
-- base mobile par defaut,
-- adaptations a `576px`, `767px`, `992px`, `1024px`.
-
-Points traites :
-
-- grilles de cartes produits,
-- bloc hero,
-- footer,
-- modals,
-- prevention du scroll horizontal parasite (`overflow-x: hidden`).
-
-## 7) Sliders et animations
-
-- Temoignages :
-  - navigation manuelle via fleches,
-  - autoplay toutes les 4 secondes.
-- Produits :
-  - animations subtiles (flottement/rotation),
-  - hover premium.
-- Hero :
-  - animation verticale douce sur la montre principale.
-
-## 8) Stack et contraintes techniques
+## Stack technique
 
 - HTML5
-- CSS3
-- JavaScript ES6+
-- Swiper.js (slider)
+- CSS3 (vanilla)
+- JavaScript ES6 (vanilla)
+- [Swiper.js](https://swiperjs.com/) pour les sliders
 
-Contraintes respectees :
+## Lancer le projet en local
 
-- pas de framework frontend,
-- pas de backend,
-- styles en CSS pur (SCSS retire),
-- logique metier cote client.
+Depuis le dossier racine:
+
+```bash
+py -m http.server 5500
+```
+
+Puis ouvrir:
+
+- `http://localhost:5500`
+
+Alternative:
+
+```bash
+python -m http.server 5500
+```
+
+## Deploiement Netlify
+
+Le projet est prepare pour Netlify via `netlify.toml`.
+
+### Option 1 - Interface Netlify
+
+1. Connecter le repo GitHub
+2. Build command: *(laisser vide)*
+3. Publish directory: `.`
+4. Deploy
+
+### Option 2 - Netlify CLI
+
+```bash
+npm i -g netlify-cli
+netlify login
+netlify init
+netlify deploy --prod
+```
+
+## Branche et depot
+
+Le projet doit vivre sur une seule branche de production:
+
+- branche principale: `main`
+
+Repository GitHub cible:
+
+- [JBixx/Site-Rolex](https://github.com/JBixx/Site-Rolex.git)
+
+## Auteur
+
+- HIRWA Jean Baptiste
